@@ -52,6 +52,7 @@ init_db()
 app.include_router(notes_router)
 
 
+# PUBLIC_INTERFACE
 @app.get("/", tags=["Health"], summary="Health Check", description="Simple health check endpoint.")
 def health_check():
     """
@@ -61,3 +62,22 @@ def health_check():
     - 200 OK with a simple JSON indicating service is healthy.
     """
     return {"message": "Healthy"}
+
+
+if __name__ == "__main__":
+    """
+    Development/standalone entry point.
+
+    Reads HOST and PORT environment variables and starts a uvicorn server
+    serving this FastAPI application. Defaults: HOST=0.0.0.0, PORT=3001.
+    """
+    import uvicorn
+
+    host = os.getenv("HOST", "0.0.0.0")
+    # Ensure numeric port; default to 3001 to satisfy readiness expectations
+    try:
+        port = int(os.getenv("PORT", "3001"))
+    except ValueError:
+        port = 3001
+
+    uvicorn.run("src.api.main:app", host=host, port=port, log_level="info")
