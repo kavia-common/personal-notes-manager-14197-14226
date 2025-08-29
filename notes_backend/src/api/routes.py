@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Response
 from sqlalchemy.orm import Session
 
 from .db import get_db
@@ -106,8 +106,9 @@ def update_note(note_id: int, payload: NoteUpdate, svc: NoteService = Depends(_s
     summary="Delete note",
     description="Delete a note by its ID.",
     status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
 )
-def delete_note(note_id: int, svc: NoteService = Depends(_service)) -> None:
+def delete_note(note_id: int, svc: NoteService = Depends(_service)) -> Response:
     """
     Delete a note.
 
@@ -118,4 +119,5 @@ def delete_note(note_id: int, svc: NoteService = Depends(_service)) -> None:
     - 204 No Content on success, or 404 if not found.
     """
     svc.delete_note(note_id)
-    return None
+    # Explicitly return a 204 No Content with no response body
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
